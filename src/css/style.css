@@ -3,7 +3,7 @@
     --gradient-height: 2px;
   }
 
-@font-face {
+/* @font-face {
     font-display: swap; 
     font-family: 'Inter';
     font-style: normal;
@@ -40,7 +40,7 @@
     font-style: normal;
     font-weight: 700;
     src: url('/fonts/space-grotesk-v15-latin_latin-ext-700.woff2') format('woff2'); 
-}
+} */
 
 .gradient-line {
     background-image:   linear-gradient(90deg,transparent,transparent 50%,theme('colors.pacamara-white') 50%,theme('colors.pacamara-white') 100%),
@@ -60,6 +60,7 @@
 
 .gradient-underline {
     line-height: 0.6em;
+    font-size: 2rem;
     vertical-align: 0em;
     border-bottom: .27em solid transparent;
     -moz-border-image: -moz-linear-gradient(left, theme('colors.pacamara-secondary') 0%, theme('colors.pacamara-accent') 100%);
@@ -72,6 +73,7 @@
 
 .gradient-underline span {
     vertical-align: -0.38em;
+    font-size: 2rem;
 }
 
 .image-shine {

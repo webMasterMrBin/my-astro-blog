@@ -8,7 +8,7 @@ import '../css/style.css';
 const { postData } = Astro.props;
 ---
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN" class="dark">
 
 <head>
     <script is:inline>
@@ -32,11 +32,11 @@ const { postData } = Astro.props;
     <meta name="view-transition" content="same-origin" />
     <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="./rss.xml" />
     <SeoHead postData={postData} />
-    <link rel="preload" href="/fonts/inter-v12-latin_latin-ext-regular.woff2" as="font" crossorigin>
+    <!-- <link rel="preload" href="/fonts/inter-v12-latin_latin-ext-regular.woff2" as="font" crossorigin>
     <link rel="preload" href="/fonts/inter-v12-latin_latin-ext-700.woff2" as="font" crossorigin>
     <link rel="preload" href="/fonts/space-grotesk-v15-latin_latin-ext-regular.woff2" as="font" crossorigin>
     <link rel="preload" href="/fonts/space-grotesk-v15-latin_latin-ext-600.woff2" as="font" crossorigin>
-    <link rel="preload" href="/fonts/space-grotesk-v15-latin_latin-ext-700.woff2" as="font" crossorigin>
+    <link rel="preload" href="/fonts/space-grotesk-v15-latin_latin-ext-700.woff2" as="font" crossorigin> -->
     <ViewTransitions />
 
 </head>

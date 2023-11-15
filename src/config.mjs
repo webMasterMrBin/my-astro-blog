@@ -9,7 +9,7 @@ export default {
     social: {
         'dribbble': false,
         'facebook': false,
-        'github': 'https://github.com/palmiak',
+        'github': 'https://github.com/webMasterMrBin',
         'instagram': false,
         'mastodon': false,
         'pinterest': false,
