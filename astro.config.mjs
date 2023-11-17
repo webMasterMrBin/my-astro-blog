@@ -1,9 +1,12 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 import tailwind from "@astrojs/tailwind";
 import mdx from "@astrojs/mdx";
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [tailwind(), mdx()],
-  site: "https://pacamara-astro-6y7xr.kinsta.page"
+  image: {
+    service: passthroughImageService(),
+  },
 });
+

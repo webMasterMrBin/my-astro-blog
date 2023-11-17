@@ -9,10 +9,11 @@ import '../css/style.css';
 const { postData } = Astro.props;
 ---
 <!doctype html>
-<html lang="zh-CN" class="dark" style="font-size: 14px">
+<html lang="zh-CN" style="font-size: 14px">
 
 <head>
     <script is:inline>
+        localStorage.darkMode = 'true';
         const setDarkMode = () => {
             if (localStorage.darkMode === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark')
@@ -24,7 +25,7 @@ const { postData } = Astro.props;
         }
 
         setDarkMode();
-        // Runs on view transitions navigation
+        // // Runs on view transitions navigation
         document.addEventListener('astro:after-swap', setDarkMode);
     </script>
     

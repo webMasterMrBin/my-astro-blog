@@ -15,6 +15,7 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props;
 entry.data.type = "blog";
+console.log('xx', entry.data.title)
 
 const { Content } = await entry.render();
 ---
@@ -27,7 +28,7 @@ const { Content } = await entry.render();
         <h1 class="transition-all duration-300 dark:text-white">{entry.data.title}</h1>
     </div>
     {entry.data.image && 
-        <Image src={entry.data.image} width="1200" height="250" alt="" loading="eager" decoding="sync" class="block relative mx-auto mt-10 object-cover h-72 md:h-[350px] image-shine rounded-[15px]" loading="eager" />
+        <Image src={entry.data.image} style={{ height: entry.data.title === 'About me' ? '500px' : '350px' }} width="1200" height="250" alt="" loading="eager" decoding="sync" class="block relative mx-auto mt-10 object-cover h-72 md:h-[350px] image-shine rounded-[15px]" loading="eager" />
     }
         <div class="
             lg:px-0 pt-10 mb-5 mx-auto
