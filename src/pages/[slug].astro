@@ -15,7 +15,6 @@ export async function getStaticPaths() {
 }
 const { entry } = Astro.props;
 entry.data.type = "blog";
-console.log('xx', entry.data.title)
 
 const { Content } = await entry.render();
 ---
