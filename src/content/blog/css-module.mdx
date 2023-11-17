@@ -8,4 +8,194 @@ image: ../../assets/css-modules-logo.jpg
 readTime: '5'
 ---
 
-## css-modules 使用说明
+import { Image } from 'astro:assets'
+import productComplie from '../../assets/css-modules/productComplie.png'
+
+css-modules 解决了传统 CSS 中命名冲突、作用域污染和样式维护困难的问题，提供了更好的样式模块化和组织方式，使得前端开发更加易于管理和扩展。以下你将详细了解
+css-modules 的优点和解决的问题, 以及如何配置css-modules
+
+## 全局作用域样式污染
+
+```javascript
+const Header1 = () => {
+  return <div className="header-container">header</div>
+};
+
+const Header2 = () => {
+  return <div className="header-container">header</div>
+};
+```
+
+
+以上有两个组件使用了一样的样式名, 那么在同一个页面渲染后就会出现样式冲突, 在作者工作的项目中由于使用到了微前端的架构, 
+该问题在同一个页面中若用到不同项目中的组件样式污染的问题会尤为突出
+
+针对该问题传统的解决方案是在团队使用[BEM](https://getbem.com)等css方法论, 但由于此类方案需要约束开发人员编码规范,
+需要一定程度的口头编码规范, 实施起来阻碍偏大, 并不完全适合真实的业务场景。而css-modules的设计完美可以解决这个问题
+
+## 样式名取名困难, 样式名嵌套层级过深
+
+```javascript
+// 一个组件的dom结构可能是这样的
+const Test = () => {
+  return (
+    <div className="test-conainer">
+      <div className="test-conainer-header">
+        <div className="test-left"></div>
+        <div className="test-rigjt"></div>
+      </div>
+    </div>
+  )
+}
+```
+
+## css-modules
+
+根据官方文档, css modules处理过的类名  都在本地作用域下, css modules旨在解决css的全局范围污染问题, css modules有几个优点
+
+1. 每个css文件只适用于被引用的那个组件, 不会影响到全局范围内的其他组件 (no more global scope)
+2. 一个组件的样式完全来源于一个css文件(全局覆盖样式除外) (没有冲突)
+3. 显性依赖
+
+#### 1. 基础使用
+
+```javascript
+import styles from './test.module.css';
+const Test = () => {
+  return (
+    <div className={styles.container}>
+      <div className={styles.header} />
+      <div className={styles.headerRight} />
+    </div>	
+  )
+}
+```
+
+```css
+/* test-module.css */
+.container {}
+.header {}
+/* 推荐使用驼峰命名 */
+.headerRight {}
+/* 如果没有有不想被编译的类名 那么可以写成 如下other类名将不会被编译 始终具有全局域效果 */
+:global(.other) {}
+```
+
+编译后结果
+<Image src={productComplie} style={{ textAlign: 'left', marginLeft: 0 }} alt="" />
+如上编译后类名被编译成hash格式确保类名唯一 以隔绝名称冲突的问题😎, 编译后类名名称可自定义, 建议生产使用[hash:64], 开发环境使用文件路径
+
+#### 2. 组合类名
+
+```css
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  /* 额外样式如 font-size等 */
+  /*
+  使用composes关键字复用flex通用类, 不用额外定义 
+  在vscode可能报关键词error, 需要在配置文件加上"css.lint.validProperties": ["composes"]
+   */
+  composes: flex
+}
+```
+
+#### 3. 显性依赖
+
+```css
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 100px;
+  composes: flex;
+  /** 允许组合多个 同时允许引入其他文件中的类名, 这样帮助我们了解所有样式中的出处显性依赖 */
+  composes: other from './other.module.css';
+}
+```
+
+#### 4. 使用变量
+
+项目中我们可能有多种主题, 我们需要一个文件统一管理这些常量 颜色, 间距, 字体等
+使用前提[namedExport](https://webpack.docschina.org/loaders/css-loader/#namedexport)需打开
+```css
+/** config/variable.module.css */
+/** 推荐对特定的值使用 v- 的前缀，给选择器使用 s- 的前缀，并且为媒体规则使用 m- 前缀。*/
+@value v-blue: #0c77f8;
+@value v-red: #ff0000;
+@value v-green: #aaf200;
+@value s-black: black-selector;
+@value m-large: (min-width: 960px);
+
+/** 使用 
+test.module.css
+*/
+
+@value v-red, v-blue, s-black, m-large from 'config/variable.module.css';
+.container {
+  background: v-blue;
+}
+
+.s-black {
+  backgroud: #000;
+}
+
+@media m-large {
+  
+}
+```
+
+#### 5. 配置css-modules(webpack)
+
+```javascript
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                /** auto为true, 将识别xxx.module.css的格式为css modules,对xxx.css不会
+                  编译成css modules的格式
+                */
+                auto: true,
+                // 开发环境使用[path][name]__[local]方便调试, 生成环境直接[hash64]输出类名
+                localIdentName: '[path][name]__[local]',
+                /** 开启es6导出格式, 开启后可以使用css modules变量功能,
+              同时组件中导入样式 可以直接 import { container } from 'index.module.css'
+                */
+                namedExport: true,
+                // 使用驼峰格式
+                exportLocalsConvention: 'camelCaseOnly'
+              },
+            }
+          },
+        ]
+      },
+    ]
+  }
+}
+```
+
+## 总结
+
+css-modules优势
+1. 每个css文件只适用于被引用的那个组件, 不会影响到全局范围内的其他组件 (没有全局作用域, 无样式污染问题)
+2. 一个组件的样式完全来源于一个css文件(全局覆盖样式除外)
+3. 显性依赖 (帮助开发人员在代码结构中更好了解到组件的样式依赖)
+
+ps. 如果你不想写细粒度的样式,和通用的样式 想直接使用预定义好的css类名, 那么推荐使用 [tailwindcss](https://tailwindcss.com/)
+
+## 参考
+1. [https://glenmaddern.com/articles/css-modules](https://glenmaddern.com/articles/css-modules)
+2. [https://github.com/css-modules/css-modules](https://github.com/css-modules/css-modules)
