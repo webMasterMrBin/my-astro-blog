@@ -1,7 +1,7 @@
 export default {
     title: "blog",
     titleSuffix: "| 宋黎斌",
-    description: "Aromatic brew, pure indulgence, exquisite satisfaction.Default description",
+    description: "前端人宋黎斌的个人技术博客, 记录react等web相关知识",
     defaultOgImage: "./assets/authors/songlibin.JPG",
     latestPosts: 3,
     postsPerPage: 3,

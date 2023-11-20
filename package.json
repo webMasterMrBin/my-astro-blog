@@ -11,12 +11,18 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^1.0.0",
+    "@astrojs/react": "^2.2.1",
     "@astrojs/rss": "^2.4.3",
     "@astrojs/tailwind": "^5.0.0",
     "@tailwindcss/typography": "^0.5.9",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "antd": "^5.11.2",
     "astro": "^3.0.0",
     "astro-icon": "^0.8.1",
     "dateformat": "^5.0.3",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "tailwindcss": "^3.3.2"
   },
   "devDependencies": {
