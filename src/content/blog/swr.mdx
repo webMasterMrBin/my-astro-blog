@@ -1,0 +1,75 @@
+---
+title: react SWR 数据请求库浅析
+pubDate: 2023-11-22
+intro: 学习react中优秀的数据请求库SWR的功能和设计
+tag: react
+author: lbsong
+image: ../../assets/swr/icon.png
+readTime: '10'
+---
+
+了解SWR的功能和作用前, 先让我们来回顾一下传统的react组件中标准的一套数据请求流程
+
+## 标准的react数据请求
+
+```javascript
+  /* 标准的react数据请求 */
+  const fetchData = url => {
+    return fetch(url).then(res => res.json())
+  };
+  const Parent = () => {
+    const [data, setData] = useState({
+      /* 一个请求会有如下的几个基本状态 供前端组件使用 */
+      data: {}, // 接口请求成功后 返回数据的数据格式
+      loading: false, // 是否正在请求
+      error: {}, // error信息
+      // 更多
+    });
+    /* 在父组件请求数据后拿到data后, 通过props drilling或者context等方式传递给 子组件使用 */
+    useEffect(() => {
+      fetchData('/api/demo').then(d => setData(d));
+    }, []);
+    return (
+      <>
+        <ChildA />
+        <ChildB />
+      </>
+    )
+  }
+```
+
+在真实的开发场景中, 以上这种模式主要会有两个问题
+1. 需要通用的接口数据处理方法处理数据请求的返回数据结构(data, loading, error等状态)
+
+2. 接口复用性差, 额外处理[状态提升](https://react.dev/learn/sharing-state-between-components#lifting-state-up-by-example).
+当有不同的组件在同一页面用到同一接口时, 为了不使相同接口调用多次, 通常会使用状态提升将接口状态提升至公共父组件处理, 通过props drilling或者context等方式传递给
+按需使用, 当子组件数量较多 同时层级嵌套的比较深时, 该方案会特别麻烦, bug率会提升, 开发体验也不好
+
+## SWR基础使用
+下面来看一下在如上的相同场景中使用SWR的写法
+
+```javascript
+  import useSWR from 'swr';
+  const fetchData = url => {
+    return fetch(url).then(res => res.json())
+  };
+  const Parent => () => {
+    return (
+      <>
+        <ChildA />
+        <ChildB />
+      </>
+    )
+  }
+  const ChildA = () => {
+    const { data, loading, error } = useSWR(`/api/demo`, fetchData);
+  }
+  const ChildB = () => {
+    const { data, loading, error } = useSWR(`/api/demo`, fetchData);
+  }
+```
+
+通过采用SWR的写法模式, 代码更加具有声明性, 我们只要指定什么组件调用什么接口获取数据即可, 同时SWR内置的[缓存](https://swr.vercel.app/zh-CN/docs/advanced/cache)功能
+完美的解决了请求多次调用的问题, 如果你渲染了Parent组件, 查看Network你会发现请求只调用了一次, perfect!, no more lift state up!😎
+
+## 竞态问题
