@@ -69,7 +69,76 @@ readTime: '10'
   }
 ```
 
-通过采用SWR的写法模式, 代码更加具有声明性, 我们只要指定什么组件调用什么接口获取数据即可, 同时SWR内置的[缓存](https://swr.vercel.app/zh-CN/docs/advanced/cache)功能
+通过采用SWR的写法模式, 代码更加具有声明性, 我们只要指定什么组件调用什么接口获取数据即可, 同时SWR内置的 [缓存](https://swr.vercel.app/zh-CN/docs/advanced/cache) 功能
 完美的解决了请求多次调用的问题, 如果你渲染了Parent组件, 查看Network你会发现请求只调用了一次, perfect!, no more lift state up!😎
 
 ## 竞态问题
+```javascript
+  export default function DataDisplayer(props) {
+    const [data, setData] = useState(null);
+    const [fetchedId, setFetchedId] = useState(null);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        setTimeout(async () => {
+          const response = await fetch(
+            `https://swapi.dev/api/people/${props.id}/`
+          );
+          const newData = await response.json();
+
+          setFetchedId(props.id);
+          setData(newData);
+          // 设置随机定时器 请求乱序返回
+        }, Math.round(Math.random() * 12000));
+      };
+
+      fetchData();
+    }, [props.id]);
+
+    return <div>{data}</div>;
+  }
+```
+查看例子 [codesandbox](https://codesandbox.io/p/sandbox/beating-async-race-conditions-in-react-7759f?file=%2Fpackage.json),
+运行结果发现dom并没有渲染 预期的最后返回的请求结果, 这就是react组件中常见的请求竞态问题 [竞态](https://en.wikipedia.org/wiki/Race_condition)
+
+### 解决竞态问题
+```javascript
+  useEffect(() => {
+    let active = true;
+
+    const fetchData = async () => {
+      setTimeout(async () => {
+        const response = await fetch(`https://swapi.dev/api/people/${props.id}/`);
+        const newData = await response.json();
+        if (active) {
+          setFetchedId(props.id);
+          setData(newData);
+        }
+      }, Math.round(Math.random() * 12000));
+    };
+
+    fetchData();
+    // 下一次useEffect之前 清理
+    return () => {
+      active = false;
+    };
+  }, [props.id]);
+```
+
+通过将active设为false, 过时的请求无法更新我们最新的状态 (该方案无法解决请求的竞态问题, 但可以确保最后一个请求的结果被使用, 可以使用 [Abort signal终止fetch](https://developer.mozilla.org/en-US/docs/Web/API/AbortController/signal)
+
+## SWR价值
+基于以上react中的数据请求问题, 如果我们不选择一个成熟的数据请求库, 那么我们将面对主要以下两个问题
+1. 复用性差, 需要额外处理接口状态和封装请求逻辑, 在组件数量多的情况下, 传统的数据请求会破坏代码的可维护性
+2. 竞态问题
+
+而 [SWR](https://swr.vercel.app/) 内置的缓存机制和功能帮我们完美解决以上问题, 让开发人员无需在关心这些基础问题, 初次之外, SWR还拥有以下的功能
+
+1. 极速、轻量、可重用的 数据请求
+2. 内置 缓存 和重复请求去除
+3. 间隔轮询, 分页, 重新验证
+4. Optimistic UI
+5. [更多](https://swr.vercel.app/)
+
+## 参考文章
+1. https://maxrozen.com/race-conditions-fetching-data-react-with-useeffect

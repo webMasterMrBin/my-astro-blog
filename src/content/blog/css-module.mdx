@@ -30,7 +30,7 @@ const Header2 = () => {
 以上有两个组件使用了一样的样式名, 那么在同一个页面渲染后就会出现样式冲突, 在作者工作的项目中由于使用到了微前端的架构, 
 该问题在同一个页面中若用到不同项目中的组件样式污染的问题会尤为突出
 
-针对该问题传统的解决方案是在团队使用[BEM](https://getbem.com)等css方法论, 但由于此类方案需要约束开发人员编码规范,
+针对该问题传统的解决方案是在团队使用 [BEM](https://getbem.com) 等css方法论, 但由于此类方案需要约束开发人员编码规范,
 需要一定程度的口头编码规范, 实施起来阻碍偏大, 并不完全适合真实的业务场景。而css-modules的设计完美可以解决这个问题
 
 ## 样式名取名困难, 样式名嵌套层级过深
@@ -124,7 +124,7 @@ const Test = () => {
 #### 4. 使用变量
 
 项目中我们可能有多种主题, 我们需要一个文件统一管理这些常量 颜色, 间距, 字体等
-使用前提[namedExport](https://webpack.docschina.org/loaders/css-loader/#namedexport)需打开
+使用前提 [namedExport](https://webpack.docschina.org/loaders/css-loader/#namedexport) 需打开
 ```css
 /** config/variable.module.css */
 /** 推荐对特定的值使用 v- 的前缀，给选择器使用 s- 的前缀，并且为媒体规则使用 m- 前缀。*/
