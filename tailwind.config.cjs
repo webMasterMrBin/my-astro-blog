@@ -11,6 +11,8 @@ module.exports = {
 				'pacamara-shadow': '0px 25px 50px -12px rgba(0, 0, 0, 0.3)',
 			},
 			fontFamily: {
+				// 'pacamara-inter': ['"Noto Sans SC"', 'sans-serif'],
+				// 'pacamara-space': ['"Noto Sans SC"', 'sans-serif'],
 				'pacamara-inter': ['"Inter"', 'sans-serif'],
 				'pacamara-space': ['"Space Grotesk"', 'sans-serif'],
 			},
