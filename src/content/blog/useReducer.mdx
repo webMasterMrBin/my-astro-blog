@@ -5,7 +5,7 @@ intro: actionless reducer及更多reducer用法, 学习各类reducer帮助你提
 tag: react
 author: lbsong
 image: ../../assets/useReducer/useReducer.png
-readTime: '10'
+readTime: '12'
 ---
 
 useReducer 不仅仅适用于复杂的状态更新逻辑，它还可以用于非常简单的状态更新。reducer的两个参数之一可以被忽略，使其成为无操作或无状态。
@@ -54,3 +54,46 @@ useReducer 不仅仅适用于复杂的状态更新逻辑，它还可以用于非
   /* increment 的dispatch 可作为强制render方法使用 */
   const [count, increment: forceUpdate] = useReducer(count => count + 1, 0)
 ```
+
+#### Optional Action Reducer 可选action
+
+该reducer是 状态切换的变体
+
+```javascript
+  const [isOpen, toggleOpen] = useReducer((state, isOpen) => isOpen ?? !state, false);
+  toggleOpen(); // true
+  toggleOpen(false) // false 明确设置状态 无需关心上次状态
+  toggleOpen(true) // true
+```
+
+## Stateless Reducer
+
+无状态reducer忽略了state参数针对每个特定的action做不同的操作, 可以需要对特定的action做同样的逻辑, 那么可以避免重复的逻辑
+
+```javascript
+  /* 一个根据异步结果返回 请求状态的 stateless reducer
+    这个栗子中我们只需要根据不同的action类型返回对应的不同状态即可, 无需关心state, 
+    同理 stateless reducer 还可以用于更多业务逻辑中 给定对应action 处理固定的相同逻辑
+  */
+  function asyncLoadAction(state, action) {
+    switch (action.type) {
+      case 'loading':
+        return { status: 'loading', data: null, error: null }
+      case 'success':
+        return { status: 'success', data: {}, error: null }
+      case 'error':
+        return { status: 'error', data: null, error: new Error('wrong') }
+      default: {
+        throw new Error(`Unhandled action type: ${action.type}`);
+      }
+    }
+  }
+```
+
+## 总结
+
+通过以上的几个reducer的用法, 是不是觉得 useReducer 比 useState 强大了很多呢😎, 
+虽然useState相比useReducer更直接, 但是在复杂的状态处理下, 分散的useState带来许多问题, 因此以下是我总结的我认为useReducer好于useState的几个优点
+1. useReducer 集中编写状态管理逻辑, 更易维护, 编写一个reducer虽然多了很多状态的额外代码, 但是随着项目的庞大, useReducer会更容易  **debugger**, 状态的变换更加可控
+2. 简化了代码, 在一些场景中 如切换状态, 第一个用法actionless reducer相比useState的实现更精简也更合适
+3. 无需处理回调函数的逻辑, useReducer的dispatch自带memo处理😎
