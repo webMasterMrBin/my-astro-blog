@@ -58,6 +58,7 @@ const fadeZoomIn = {
             <PublishDate date={entry.data.pubDate} readTime={entry.data.readTime} />
         </p>
     </div>
+   
     {entry.data.image && 
       <Image transition:animate={fadeZoomIn} src={entry.data.image} width="1200" height="250" alt="" loading="eager" decoding="sync" class="block relative mx-auto mt-10 object-cover h-72 md:h-[350px] image-shine rounded-[15px]" loading="eager" />
     }
@@ -80,7 +81,7 @@ const fadeZoomIn = {
       <Content />
       </div>
 
-      <TableContents tableContents={entry.data.tableContents} />
+      {entry.data.tableContents.length > 1 && <TableContents tableContents={entry.data.tableContents} />}
     </div>
     
   </article>

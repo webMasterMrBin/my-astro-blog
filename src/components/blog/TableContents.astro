@@ -1,10 +1,10 @@
 ---
 const { tableContents } = Astro.props;
 ---
-<aside class="dark:text-white sticky top-[100px] h-[100px] ml-[100px] mt-[20px]">
+<aside class="md:block hidden dark:text-white sticky top-[100px] h-[200px] w-[200px] mt-[20px] ml-[60px]">
   <h4 class="mb-[10px] text-xl">目录</h4>
   {tableContents.map(v => (<>
-    <a class="block mb-[10px]" href={v.id}>{v.name}</a>
-    {v.children?.map(child => <a class="block mb-[10px] ml-[10px]" href={child.id}>{child.name}</a>)}
+    <a class="block mt-[16px]" href={v.id}>{v.name}</a>
+    {v.children?.map(child => <a class="block mt-[10px] ml-[10px]" href={child.id}>{child.name}</a>)}
   </>))}
 </aside>
