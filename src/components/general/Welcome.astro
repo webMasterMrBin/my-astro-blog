@@ -3,8 +3,27 @@ import { Image } from 'astro:assets'
 
 import logoImage from '../../assets/logo.jpg';
 
+const anim = {
+  old: {
+    name: 'slideInLeft',
+    duration: '0.2s',
+    easing: 'linear',
+    fillMode: 'forwards',
+  },
+  new: {
+    name: 'slideInLeft',
+    duration: '0.2s',
+    easing: 'linear',
+    fillMode: 'backwards',
+  }
+};
+
+const myFade = {
+  forwards: anim,
+  backwards: anim,
+};
 ---
-<section class="
+<section transition:animate={myFade} class="
         container mx-auto max-w-screen-xl px-7 py-10
         lg:min-h-[220px] content-center font-pacamara
         prose lg:prose-xl

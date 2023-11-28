@@ -4,6 +4,7 @@ import { Image } from 'astro:assets'
 import Base from "../layouts/Base.astro";
 
 import { getCollection, getEntry } from "astro:content";
+import { fade } from 'astro:transitions';
 
 export async function getStaticPaths() {
   const pageEntries = await getCollection("page");
@@ -17,6 +18,27 @@ const { entry } = Astro.props;
 entry.data.type = "blog";
 
 const { Content } = await entry.render();
+
+const anim = {
+  old: {
+    name: 'zoomIn',
+    duration: '0.2s',
+    easing: 'linear',
+    fillMode: 'forwards',
+  },
+  new: {
+    name: 'zoomIn',
+    duration: '0.2s',
+    easing: 'linear',
+    fillMode: 'backwards',
+  }
+};
+
+const myFade = {
+  forwards: anim,
+  backwards: anim,
+};
+
 ---
 
 <Base postData={entry}>
@@ -27,7 +49,7 @@ const { Content } = await entry.render();
         <h1 class="transition-all duration-300 dark:text-white">{entry.data.title}</h1>
     </div>
     {entry.data.image && 
-        <Image src={entry.data.image} style={{ height: entry.data.title === 'About me' ? '500px' : '350px' }} width="1200" height="250" alt="" loading="eager" decoding="sync" class="block relative mx-auto mt-10 object-cover h-72 md:h-[350px] image-shine rounded-[15px]" loading="eager" />
+        <Image transition:animate={myFade} src={entry.data.image} style={{ height: entry.data.title === 'About me' ? '500px' : '350px' }} width="1200" height="250" alt="" loading="eager" decoding="sync" class="block relative mx-auto mt-10 object-cover h-72 md:h-[350px] image-shine rounded-[15px]" loading="eager" />
     }
         <div class="
             lg:px-0 pt-10 mb-5 mx-auto
