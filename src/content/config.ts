@@ -7,6 +7,14 @@ const blogCollection = defineCollection({
         intro: z.string(),
         tag: z.string(),
         readTime: z.string(),
+        tableContents: z.array(z.object({
+            id: z.string(),
+            name: z.string(),
+            children: z.array(z.object({
+                id: z.string(),
+                name: z.string(),
+            })).optional(),
+        })),
         image: image().optional(),
         author: reference('author'),
         pubDate: z.date(),

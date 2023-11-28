@@ -92,6 +92,7 @@ html {
     scrollbar-color: theme('colors.pacamara-secondary') transparent;
     scrollbar-width: auto;
     font-size: 14px;
+    scroll-behavior: smooth;
 }
 
 body::-webkit-scrollbar {

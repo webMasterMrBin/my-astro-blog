@@ -6,6 +6,7 @@ import AuthorInfo from "../../components/blog/AuthorInfo.astro";
 import LatestPosts from "../../components/blog/LatestPosts.astro";
 import PublishDate from "../../components/blog/PublishDate.astro";
 import Tag from "../../components/general/Tag.astro";
+import TableContents from "../../components/blog/TableContents.astro";
 
 import { getCollection, getEntry } from "astro:content";
 
@@ -22,7 +23,6 @@ entry.data.type = "blog";
 
 const { Content } = await entry.render();
 const author = await getEntry(entry.data.author);
-// console.log('entry', entry);
 
 const zoomIn = {
   old: {
@@ -46,7 +46,7 @@ const fadeZoomIn = {
 ---
 
 <Base postData={entry}>
-  <article  class="px-7 pt-10 mx-auto w-full">
+  <article class="px-7 pt-10 mx-auto w-full relative">
     <div
       class="mx-auto
       prose lg:prose-xl prose-headings:font-bold prose-headings:text-pacamara-dark prose-headings:mb-3
@@ -61,8 +61,10 @@ const fadeZoomIn = {
     {entry.data.image && 
       <Image transition:animate={fadeZoomIn} src={entry.data.image} width="1200" height="250" alt="" loading="eager" decoding="sync" class="block relative mx-auto mt-10 object-cover h-72 md:h-[350px] image-shine rounded-[15px]" loading="eager" />
     }
-    <div class="
-        lg:px-0 pt-10 mb-5 mx-auto
+
+    <div class="flex justify-center w-full">
+      <div class="
+        lg:px-0 pt-10 mb-5
         prose lg:prose-xl
         prose-headings:transition-all prose-headings:duration-300 prose-headings:font-pacamara-space prose-headings:font-bold prose-headings:text-pacamara-accent prose-headings:mb-0 prose-headings:pb-3 prose-headings:mt-6
         prose-p:transition-all prose-p:duration-300 prose-p:text-pacamara-primary/80 
@@ -76,8 +78,12 @@ const fadeZoomIn = {
         dark:prose-headings:text-pacamara-accent dark:prose-p:text-white/70 dark:prose-a:text-white dark:hover:prose-a:text-pacamara-accent dark:prose-strong:text-white dark:prose-li:text-white dark:prose-code:text-white dark:prose-td:text-white/70 dark:prose-hr:border-pacamara-accent/30 dark:prose-tr:border-pacamara-accent/30 dark:prose-thead:border-pacamara-accent/30
       ">
       <Content />
-  </div>
-</article>
+      </div>
+
+      <TableContents tableContents={entry.data.tableContents} />
+    </div>
+    
+  </article>
 
 <AuthorInfo authorData={author} />
 
