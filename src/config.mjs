@@ -3,8 +3,8 @@ export default {
     titleSuffix: "| 宋黎斌",
     description: "前端人宋黎斌的个人技术博客, 记录react等web相关知识",
     defaultOgImage: "./assets/authors/songlibin.JPG",
-    latestPosts: 3,
-    postsPerPage: 3,
+    latestPosts: 10,
+    postsPerPage: 10,
     url: "https://pacamara-astro-6y7xr.kinsta.page",
     social: {
         'dribbble': false,
