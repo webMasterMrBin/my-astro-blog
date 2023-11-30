@@ -13,7 +13,10 @@ const { postData } = Astro.props;
 
 <head>
     <script is:inline>
-        localStorage.darkMode = 'true';
+        if (!localStorage.darkMode) {
+            localStorage.darkMode = 'true';
+        }
+
         const setDarkMode = () => {
             if (localStorage.darkMode === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark')
