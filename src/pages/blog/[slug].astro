@@ -6,7 +6,8 @@ import AuthorInfo from "../../components/blog/AuthorInfo.astro";
 import LatestPosts from "../../components/blog/LatestPosts.astro";
 import PublishDate from "../../components/blog/PublishDate.astro";
 import Tag from "../../components/general/Tag.astro";
-import TableContents from "../../components/blog/TableContents.astro";
+// import TableContents from "../../components/blog/TableContents.astro";
+import TableContents from '../../components/blog/TableContents.jsx';
 
 import { getCollection, getEntry } from "astro:content";
 
@@ -82,7 +83,7 @@ const fadeZoomIn = {
         <Content />
       </div>
 
-      {entry.data.tableContents.length > 0 && <TableContents tableContents={entry.data.tableContents} />}
+      {entry.data.tableContents.length > 0 && <TableContents client:load tableContents={entry.data.tableContents} />}
     </div>
     
   </article>

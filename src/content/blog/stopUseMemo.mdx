@@ -45,13 +45,13 @@ readTime: '9'
 ### 跳过昂贵的计算
 
 ```javascript
-  const App = ({ count }) => {
+  const App = ({ count }) = {
     /* 模拟一个非常耗时的同步计算函数 */
     const expensiveFilter = () => {
       /* delay 2000 每次执行该函数至少花费 2s + */
       const startTime = performace.now();
       let endTime = startTime;
-      while (endTime - startTime < 2000>) {
+      while (endTime - startTime < 2000) {
         endTime = performace.now();
       }
       doSomething();
