@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import Post from "./Post.astro";
 import config from "../../config.mjs";
 
-const { postLimit = config.latestPosts, skipPost = "" } = Astro.props;
+const { postLimit = config.latestPosts, skipPost = "", isHome } = Astro.props;
 
 const posts = (await getCollection('blog', ({ data }) => {
     return !(data.title == skipPost) ;
@@ -17,4 +17,9 @@ const posts = (await getCollection('blog', ({ data }) => {
           return <Post postData={post} num={index} />;
         })
     }
+    {isHome && (
+      <div class="flex justify-center">
+        <a href="/blog" class="text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300">查看全部</a>
+      </div>
+    )}
 </section>
