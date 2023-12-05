@@ -1,0 +1,154 @@
+---
+title: 优雅的使用 react context
+pubDate: 2023-12-10
+intro: 当我们的context对象变大时, 我们将面对context的性能问题, 了解一些技巧来阻止 context 的额外 re-render
+tag: react
+author: lbsong
+image: ../../assets/context/contextApi.png
+tableContents: [
+  {
+    id: '#性能问题-多余的re-render',
+    name: '性能问题-多余的re-render',
+    children: [
+      {
+        id: '#context拆分',
+        name: 'context拆分'
+      },
+      {
+        id: '#组件拆分后使用memo包装',
+        name: '组件拆分后使用memo包装'
+      },
+      {
+        id: '#使用usememo包装',
+        name: '使用useMemo包装',
+      },
+    ]
+  },
+  {
+    id: '#使用三方库',
+    name: '使用三方库',
+  }
+]
+readTime: '10'
+---
+
+**context** 的存在帮助我们解决了 [props drilling](https://react.dev/learn/passing-data-deeply-with-context#context-passes-through-intermediate-components) 的问题, 但是
+如果你一味的将需要管理的状态都往同一个 **context** 存储, 那么你订阅这个 **context** 的组件可能会出现意料之外的 re-render。
+
+## 性能问题-多余的re-render
+
+考虑以下这个场景
+
+```javascript
+  const Context = createContext();
+  const ContextProvider = ({ children }) => {
+    const contextValue = [useState('foo'), useState('bar')];
+    return (
+      <Context.Provider value={contextValue}>
+        {children}
+      </Context.Provider>
+    );
+  };
+  const Foo = () => {
+    /* 订阅context里的 foo 状态 */
+    const [foo] = useContext(Context);
+  };
+  const Bar = () => {
+    /* 订阅context里的 bar 状态 */
+    const [, bar] = useContext(Context);
+  }
+  /* 渲染App根组件 */
+  const App = () => {
+    return (
+      <ContextProvider>
+        <Foo />
+        <Bar />
+      </ContextProvider>
+    )
+  }
+```
+
+当在 **Foo** 组件里面更新对应的 foo 状态时, 预期应该是只有对应订阅的 **Foo** 组件 re-render, **但是实际情况所有用到该 context 的组件都 re-render 了**。
+
+由于该现象的存在, 如果我们用到 context 存储组件状态, 必须要考虑这个问题, 否则组件状态更新时, 引起其他组件意料之外的 re-render 可能会造成性能问题。[react 的设计如此](https://github.com/facebook/react/issues/14110)
+
+
+## context拆分
+
+将 [第一个例子](#性能问题-多余的re-render) 例子中 foo 和 bar 状态分别拆开管理
+
+```javascript
+  const BarContext = createContext();
+  const FooContext = createContext();
+  const ContextProvider = ({ children }) => {
+    return (
+      <BarContext.Provider value={useState('bar')}>
+        <FooContext.Provider value={useState('foo')}>
+          {children}
+        </FooContext.Provider>
+      </BarContext.Provider>
+    )
+  }
+  const Foo = () => {
+    /* 订阅context里的 foo 状态 */
+    const [foo] = useContext(FooContext);
+  };
+  const Bar = () => {
+    /* 订阅context里的 bar 状态 */
+    const [bar] = useContext(BarContext);
+  }
+```
+
+如上拆分, 将原本写在同一个 context 的状态, 按照组件使用方法不同分别拆开到不同的 context 管理, 这样只要按需更新对应的 context 即可, 不会再有额外的 re-render 问题。
+
+此方案需要按照业务需求, 细粒化拆分 context, 组件树可能会嵌套较深(context Provider组件)。在状态较少时为推荐的方案。
+
+## 组件拆分后使用memo包装
+
+```javascript
+  /* 订阅context的逻辑 使用拆分的单独的组件获取 */
+  const ContextBar = () => {
+    const [bar] = useContext(BarContext);
+    return <MemoBar bar={bar} />
+  };
+  const MemoBar = React.memo(({ bar }) => {
+    return null;
+  });
+```
+
+如上每次 BarContext 变化时, ContextBar re-render, 由于 ContextBar 内部没有其他逻辑, 因此 re-render 的开销不会很大。
+
+## 使用useMemo包装
+
+```javascript
+  const ContextBar = () => {
+    const [bar] = useContext(BarContext);
+    /* 只有bar 更新对应的 Bar 组件才会 re-render */
+    return useMemo(() => <Bar bar={bar} />, [bar])
+  }
+```
+
+将 Bar 通过 **useMemo** 包装, 指定依赖项, 保存在单独的组件中, 如果依赖不变, 则不会 re-render。
+
+## 使用三方库
+
+有一些三方库帮我们解决了 **context** 问题,
+
+### use-context-selector
+
+如果你有一些不算很复杂的状态, 我建议使用 [use-context-selector](https://github.com/dai-shi/use-context-selector)
+
+### redux和react-redux
+
+注意: **redux** 是一个状态管理库, 它和 **context** 解决的并不是同一问题, 但是 **react-redux** 自带的按需订阅和 **props drilling**
+解决方案可以有效解决使用 **context** 的性能问题, 如果你有中等且复杂的状态, 可以考虑使用状态管理库。
+
+关于 context 和 状态管理库 区别, 推荐阅读 [Why React Context is Not a "State Management" Tool (and Why It Doesn't Replace Redux)](https://blog.isquaredsoftware.com/2021/01/context-redux-differences/)
+
+## 总结
+
+1. 如果你的应用状态并不复杂, 考虑使用 [拆分context](#context拆分)。
+2. 如果你的应用状态中等复杂, 同时不想引入状态管理库, 考虑  [use-context-selector](https://github.com/dai-shi/use-context-selector)。
+3. 如果你的应用状态较复杂, 考虑 **redux** 获其他状态管理库。
+
+更多的 context 用法和说明: https://react.dev/learn/passing-data-deeply-with-context#
