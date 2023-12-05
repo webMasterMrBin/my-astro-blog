@@ -6,6 +6,6 @@ const {date, readTime} = Astro.props;
         text-pacamara-primary/50 font-pacamara-space tracking-widest transition-all duration-300 text-[16px]
         dark:text-white/40
     ">
-    { dateFormat(date, "dd-mm-yyyy") }
+    { dateFormat(date, "mm-dd-yyyy") }
     — { readTime } min read
 </small>
