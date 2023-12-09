@@ -1,0 +1,11 @@
+.wechat-fill {
+  fill: rgb(0 48 73 / 0.6);
+}
+
+.wechat-fill:hover {
+  fill: #FFB4B4;
+}
+
+.dark .wechat-fill {
+  fill: #FFB4B4;
+}

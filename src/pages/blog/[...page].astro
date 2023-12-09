@@ -18,17 +18,30 @@ export async function getStaticPaths({paginate}) {
 
 const { page } = Astro.props;
 
+const tagClass = 'cursor-pointer text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300';
+const tags = ['react', 'css', 'other'];
 ---
 <Base>
+    <!-- <div class="container mx-auto max-w-screen-lg px-7 dark:text-white">
+        <div class="dark:text-white mb-5">按文章分类搜索</div>
+        <div class="flex flex-wrap gap-5">
+            {tags.map(v => {
+                return (
+                    <div class={tagClass}>{v}</div>
+                )
+            })}
+        </div>
+    </div> -->
     <section class="container mx-auto max-w-screen-lg px-7 py-10">
-        {
+        {   
             page.data.map((post, index) => {
+                console.log('url', Astro.url)
                 return <Post postData={post} num={index} />;
             })
         }
         <div class="flex flex-row justify-center gap-7">
-            {page.url.prev ? <a href={page.url.prev} class="text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300">Previous</a> : null}
-            {page.url.next ? <a href={page.url.next} class="text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300">Next</a> : null}
+            {page.url.prev ? <a href={page.url.prev} class={tagClass}>Previous</a> : null}
+            {page.url.next ? <a href={page.url.next} class={tagClass}>Next</a> : null}
         </div>
         
     </section>
