@@ -6,6 +6,7 @@ import Tag from "../general/Tag.astro";
 const isOdd = num % 2;
 ---
 <article
+    data-tag={postData.data.tag}
     class="
         group
         lg:mb-[50px] mb-10 last:mb-0 prose lg:prose-xl max-w-none 

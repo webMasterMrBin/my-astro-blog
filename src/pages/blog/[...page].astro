@@ -18,24 +18,80 @@ export async function getStaticPaths({paginate}) {
 
 const { page } = Astro.props;
 
-const tagClass = 'cursor-pointer text-[16px] bg-transparent border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300';
+const tagClass = 'cursor-pointer text-[16px] border-pacamara-secondary border-[1px] leading-none rounded-full py-3 px-5 text-pacamara-secondary hover:bg-pacamara-accent hover:border-pacamara-accent hover:text-pacamara-white transition-all duration-300';
 const tags = ['react', 'css', 'other'];
 ---
 <Base>
-    <!-- <div class="container mx-auto max-w-screen-lg px-7 dark:text-white">
+    <script>
+        const urlParams = new URLSearchParams(location.search);
+        const tag = urlParams.get('q');
+        document.addEventListener('DOMContentLoaded', () => {
+            const posts = document.querySelectorAll(`[data-tag]`);
+            const tagBtns = document.querySelectorAll(`[data-tagbtn]`);
+            const activeClass = ['border-pacamara-accent', 'text-pacamara-white', 'bg-pacamara-accent'];
+            if (tag) {
+                posts.forEach(v => {
+                    if (v.dataset.tag === tag) {
+                        v.style.display = 'block';
+                    } else {
+                        v.style.display = 'none';
+                    }
+                })
+
+                tagBtns.forEach(v => {
+                    if (v.dataset.tagbtn === tag) {
+                        v.classList.add(...activeClass);
+                    }
+                })
+            } else {
+                posts.forEach(v => {
+                    v.style.display = 'block';
+                })
+            }
+        })
+       
+        
+    </script>
+    <div class="container mx-auto max-w-screen-lg px-7 dark:text-white">
         <div class="dark:text-white mb-5">按文章分类搜索</div>
         <div class="flex flex-wrap gap-5">
             {tags.map(v => {
                 return (
-                    <div class={tagClass}>{v}</div>
+                    <div data-tagbtn={v} class={tagClass} onclick={`
+                        const activeClass = ['border-pacamara-accent', 'text-pacamara-white', 'bg-pacamara-accent'];
+                        if (new URLSearchParams(location.search).get('q') === '${v}') {
+                            history.pushState(null, '', location.pathname);
+                            document.querySelectorAll('[data-tag]').forEach(d => {
+                                d.style.display = 'block';
+                            })
+                            document.querySelector('[data-tagbtn="${v}"]').classList.remove(...activeClass);
+                        } else {
+                            history.pushState(null, '', '?q=${v}');
+                            document.querySelectorAll('[data-tagbtn]').forEach(d => {
+                                if (d.dataset.tagbtn === '${v}') {
+                                    d.classList.add(...activeClass);
+                                } else {
+                                    d.classList.remove(...activeClass);
+                                }
+                            })
+                            document.querySelectorAll('[data-tag]').forEach(d => {
+                                if (d.dataset.tag === '${v}') {
+                                    d.style.display = 'block';
+                                } else {
+                                    d.style.display = 'none';
+                                }
+                            })
+                        }
+                        
+                       
+                    `}>{v}</div>
                 )
             })}
         </div>
-    </div> -->
+    </div>
     <section class="container mx-auto max-w-screen-lg px-7 py-10">
         {   
             page.data.map((post, index) => {
-                console.log('url', Astro.url)
                 return <Post postData={post} num={index} />;
             })
         }
