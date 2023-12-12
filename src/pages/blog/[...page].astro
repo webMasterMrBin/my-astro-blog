@@ -23,68 +23,95 @@ const tags = ['react', 'css', 'other'];
 ---
 <Base>
     <script>
-        const urlParams = new URLSearchParams(location.search);
-        const tag = urlParams.get('q');
-        document.addEventListener('DOMContentLoaded', () => {
+        function handleFilterPost() {
+            document.addEventListener('DOMContentLoaded', () => {
+            filterPost();
+            toggleTagBtnClass()
+        })
+        
+        function filterPost() {
+            const urlParams = new URLSearchParams(location.search);
+            const q = urlParams.get('q');
             const posts = document.querySelectorAll(`[data-tag]`);
-            const tagBtns = document.querySelectorAll(`[data-tagbtn]`);
-            const activeClass = ['border-pacamara-accent', 'text-pacamara-white', 'bg-pacamara-accent'];
-            if (tag) {
-                posts.forEach(v => {
-                    if (v.dataset.tag === tag) {
-                        v.style.display = 'block';
-                    } else {
-                        v.style.display = 'none';
-                    }
-                })
 
-                tagBtns.forEach(v => {
-                    if (v.dataset.tagbtn === tag) {
-                        v.classList.add(...activeClass);
-                    }
-                })
-            } else {
+            if (q) {
                 posts.forEach(v => {
-                    v.style.display = 'block';
+                    if (v.dataset.tag === q) {
+                            v.style.display = 'block';
+                        } else {
+                            v.style.display = 'none';
+                        }
+                    })
+                } else {
+                    posts.forEach(v => {
+                        v.style.display = 'block';
+                    })
+                }
+            }
+
+            function toggleTagBtnClass() {
+                const urlParams = new URLSearchParams(location.search);
+                const q = urlParams.get('q');
+                const tagBtns = document.querySelectorAll('[data-tagbtn]');
+                const activeClass = ['border-pacamara-accent', 'text-pacamara-white', 'bg-pacamara-accent'];
+                tagBtns.forEach(d => {
+                    if (d.dataset.tagbtn === q) {
+                        d.classList.add(...activeClass);
+                    } else {
+                        d.classList.remove(...activeClass);
+                    }
                 })
             }
-        })
-       
-        
+            
+            function createBrowserHistory() {
+                const listeners = [];
+                const notifyListeners = () => {
+                    listeners.forEach(listen => {
+                        listen();
+                    })
+                }
+
+                window.onpopstate = () => {
+                    notifyListeners();
+                }
+
+                return {
+                    lisen: (listener) => {
+                        listeners.push(listener);
+                    },
+                    push: (path) => {
+                        history.pushState({}, '', path);
+                        notifyListeners();
+                    }
+                }
+            }
+
+            const browserHistory = createBrowserHistory();
+
+            browserHistory.lisen(() => {
+                filterPost();
+                toggleTagBtnClass()
+            }); 
+
+            document.getElementById('tags')?.addEventListener('click', e => {
+                const urlParams = new URLSearchParams(location.search);
+                const q = urlParams.get('q');
+                if (e.target.textContent === q) {
+                    browserHistory.push(location.pathname);
+                } else {
+                    browserHistory.push(`${location.pathname}?q=${e.target.textContent}`);
+                }
+            });
+        }
+        handleFilterPost();
+        document.addEventListener('astro:after-swap', handleFilterPost);
     </script>
     <div class="container mx-auto max-w-screen-lg px-7 dark:text-white">
         <div class="dark:text-white mb-5">按文章分类搜索</div>
-        <div class="flex flex-wrap gap-5">
+        <div class="flex flex-wrap gap-5" id="tags">
             {tags.map(v => {
                 return (
-                    <div data-tagbtn={v} class={tagClass} onclick={`
-                        const activeClass = ['border-pacamara-accent', 'text-pacamara-white', 'bg-pacamara-accent'];
-                        if (new URLSearchParams(location.search).get('q') === '${v}') {
-                            history.pushState(null, '', location.pathname);
-                            document.querySelectorAll('[data-tag]').forEach(d => {
-                                d.style.display = 'block';
-                            })
-                            document.querySelector('[data-tagbtn="${v}"]').classList.remove(...activeClass);
-                        } else {
-                            history.pushState(null, '', '?q=${v}');
-                            document.querySelectorAll('[data-tagbtn]').forEach(d => {
-                                if (d.dataset.tagbtn === '${v}') {
-                                    d.classList.add(...activeClass);
-                                } else {
-                                    d.classList.remove(...activeClass);
-                                }
-                            })
-                            document.querySelectorAll('[data-tag]').forEach(d => {
-                                if (d.dataset.tag === '${v}') {
-                                    d.style.display = 'block';
-                                } else {
-                                    d.style.display = 'none';
-                                }
-                            })
-                        }
-                        
-                       
-                    `}>{v}</div>
+                    <div data-tagbtn={v} class={tagClass}>{v}</div>
                 )
             })}
         </div>
