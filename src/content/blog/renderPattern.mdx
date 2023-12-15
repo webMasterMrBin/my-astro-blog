@@ -1,0 +1,26 @@
+---
+title: 前端渲染模式总结
+pubDate: 2023-12-12
+intro: 前端架构师需要掌握的各类前端渲染模式, 选择合适的前端渲染模式可以大大提升用户体验和开发体验
+tag: other
+author: lbsong
+image: ../../assets/renderPatterns/patterns.png
+tableContents: []
+readTime: '15'
+---
+
+**前端渲染模式通常指的是在构建前端Web应用时, 页面内容是如何生成和呈现给用户的方法。**
+
+想象你现在作为一名前端架构师, 有了一个很好的灵感去构建一个新的web应用, 那么在应用技术栈开始选型时, 你就应该确定好使用何种渲染模式, 选择一个合适你的业务场景的渲染模式可以大大降低你的维护成本, 
+提升开发体验和用户体验。
+另一方面，如果错误的模式可以毁掉一个原本可以实现充满创意的应用。因此，你必须确保您的每一个革命性想法都以适当的渲染模式进行开发。
+
+## 渲染模式重要性
+
+为了创建出色的用户体验, 通常我们使用 [Core Web Vitals(CWV)](https://web.dev/articles/vitals) 指标来衡量用户体验相关的参数,
+诸如 **LCP** 等等, 同时如果你想要你的应用针对用户有更高的曝光率, 提升 **CWV** 也有助于同时提升应用的 [SEO](https://developers.google.com/search/docs/fundamentals/do-i-need-seo?hl=zh-cn),
+一个合适正确的渲染模式可以帮助你拥有好的 **CWV** 和 **SEO**。
+
+## 渲染模式选择
+
+### CSR
