@@ -21,6 +21,32 @@ readTime: '15'
 诸如 **LCP** 等等, 同时如果你想要你的应用针对用户有更高的曝光率, 提升 **CWV** 也有助于同时提升应用的 [SEO](https://developers.google.com/search/docs/fundamentals/do-i-need-seo?hl=zh-cn),
 一个合适正确的渲染模式可以帮助你拥有好的 **CWV** 和 **SEO**。
 
-## 渲染模式选择
+## SSR (Server-Side-Rendering)
 
-### CSR
+广义的服务端渲染, 前端资源如 **html** 由服务器生成并发送给客户端。**SSR** 更适合内容高度动态的应用。
+
+1. **SEO** 友好, 由于服务器生成完整的 **html** 内容, 可以自定义 **SEO** 。
+2. 首屏加载时间更快, 于客户端渲染相比, 拥有更少的 **js**, 因此 **FCP** 和 **TTI** 更快。
+3. 更慢的 **TTFB**, 所有请求由服务器处理, 服务器可能会延迟或者负载过重, 
+4. 有许多支持 **SSR** 的框架, 如 **Next.js**, 和 **Astro** 等等, 对于react用户来说, 如果你不想使用 **SSR** 框架或者想要更多的自定义行为, 可以使用 [React Server API](https://react.dev/reference/react-dom/server)
+
+以下的不是纯SSR渲染的内容, 如果用更精准的说明, 以下内容为以 **react** 为基础的 **Isomorphic Rendering** 同构渲染, 再此以更广义的 **SSR** 命名。
+
+注意, 通常服务器返回的 **html** 在首屏渲染完后都是不可交互的(server端没有dom相关可以绑定事件), 对应返回的dom节点需要在浏览器端进行一次激活交互的行为, 
+该过程被称为 [Hydration](https://react.dev/reference/react-dom/client/hydrateRoot)
+
+从服务器接收到的 DOM 组件可能需要一段时间才能完全 **Hydration**。在组件被 **Hydration** 之前，需要加载、处理和执行客户端的 JavaScript 文件。这段时间内 无法对dom元素进行交互, 因此有一些 **Hydration** 技巧可以提高该项用户体验。
+
+### Progressive Hydration 
+
+渐近式 **Hydration**, 指的是逐步按需加载执行客户端 Hydration js, 不用执行整个应用的 Hydration js。
+
+**Progressive Hydration** 可以实现代码分割, 减少包大小, 按需加载页面组件, 这些优化点是不是很熟悉呢, 其实就是常规的 **js** 优化方案, 挪到了 **Hydration** 场景中使用不同的方案实现。
+具体的实现和原理不再本文讨论, 以下是一个实现的例子供参考 [react-progressive-hydration](https://github.com/GoogleChromeLabs/progressive-rendering-frameworks-samples/blob/master/react-progressive-hydration/server.js)
+
+### Selective Hydration
+
+[Selective Hydration](https://github.com/reactwg/react-18/discussions/37), 主要依赖于 [React 18 renderToPipeableStream](https://react.dev/reference/react-dom/server/renderToPipeableStream),
+
+想象你的服务器生成一个巨大的dom结构, 你使用 **renderToString** 返回 **html** 内容, 那么将等待整个html树 返回才会看到内容, 而 **renderToPipeableStream** 流式发送内容, 无需等待整个组件树渲染完成。
+这可以显著提升用户看到页面首屏内容的速度
