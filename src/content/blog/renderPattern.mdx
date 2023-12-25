@@ -21,6 +21,17 @@ readTime: '15'
 诸如 **LCP** 等等, 同时如果你想要你的应用针对用户有更高的曝光率, 提升 **CWV** 也有助于同时提升应用的 [SEO](https://developers.google.com/search/docs/fundamentals/do-i-need-seo?hl=zh-cn),
 一个合适正确的渲染模式可以帮助你拥有好的 **CWV** 和 **SEO**。
 
+
+### SSG (Static Rending or Static Generation)
+
+静态渲染或静态生成 (SSG) 尝试向客户端提供在构建网站时生成的预渲染 HTML 内容。该模式适合内容不经常变动的应用, 比如博客网站。现代web开发中有一些强大的 **SSG** 框架, 
+比如本博客的开发就使用了 [Astro](https://astro.build/) 的 **SSG** 功能生成。
+
+1. 大量的 **HTML** 文件, 需要为用户可能访问的每个可能的路由生成单独的 HTML 文件。例如，当将其用于博客时，将为数据存储中可用的每个博客文章生成一个 HTML 文件。随后，对任何帖子的编辑都需要重新构建，更新才能反映在静态 HTML 文件中。
+2. SEO 友好, 由于 **html** 是预制好的内容, 我们可以自由的插入想要的 **SEO** 标签内容, 你可以使用 **Google Lighthouse** 检查一下本博客, 将会发现 **SEO** 分数将是满分😎。
+3. 动态内容, 每次内容更新需要重新构建和部署 **SSG** 服务, 因此需要依赖设置正确的缓存, 关于如何设置合适的缓存策略, 建议阅读 [浏览器缓存最佳实践](https://www.songlibin.xyz/blog/cache/), 针对高度动态内容, 不建议使用 **SSG**。
+
+
 ## SSR (Server-Side-Rendering)
 
 广义的服务端渲染, 前端资源如 **html** 由服务器生成并发送给客户端。**SSR** 更适合内容高度动态的应用。
